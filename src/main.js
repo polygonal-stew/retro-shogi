@@ -1,5 +1,10 @@
-let _ = require('lodash');
-let glMatrix = require('gl-matrix');
+import './style.css';
+
+import vertexSource from './shaders/vertex.glsl?raw';
+import fragmentSource from './shaders/fragment.glsl?raw';
+
+import * as _ from 'lodash';
+import { mat4 } from 'gl-matrix';
 
 const Movement = {
     Forward: 1,
@@ -375,7 +380,7 @@ class UserInterface {
 
     async loadAssets() {
         const files = await Promise.all([
-            fetch('user_interface_texture.json').then(function (response) {
+            fetch('/user_interface_texture.json').then(function (response) {
                 return response.json();
             }),
             new Promise(function (resolve) {
@@ -383,29 +388,21 @@ class UserInterface {
                 image.onload = () => {
                     resolve(image);
                 };
-                image.src = 'user_interface_texture.png';
-            }),
-            fetch('screen_vertex.glsl').then(function (response) {
-                return response.text();
-            }),
-            fetch('screen_fragment.glsl').then(function (response) {
-                return response.text();
+                image.src = '/user_interface_texture.png';
             }),
             new Promise(function (resolve) {
                 let image = new Image;
                 image.onload = () => {
                     resolve(image);
                 };
-                image.src = 'selection_grid.png';
+                image.src = '/selection_grid.png';
             })
         ]);
 
         return {
             textureMetaInformation: files[0],
             texture: files[1],
-            vertexSource: files[2],
-            fragmentSource: files[3],
-            grid: files[4],
+            grid: files[2],
         };
     }
 
@@ -425,7 +422,7 @@ class UserInterface {
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        const shaderProgram = this.initializeShaderProgram(gl, assets.vertexSource, assets.fragmentSource);
+        const shaderProgram = this.initializeShaderProgram(gl, vertexSource, fragmentSource);
 
         const programInfo = {
             program: shaderProgram,
@@ -494,11 +491,11 @@ class UserInterface {
 
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indexBuffer);
 
-            let matrix = glMatrix.mat4.create();
-            glMatrix.mat4.ortho(matrix, 0, 1, 0, 1, 0.1, 11);
-            glMatrix.mat4.translate(matrix, matrix, [0, 0, -10]);
+            let matrix = mat4.create();
+            mat4.ortho(matrix, 0, 1, 0, 1, 0.1, 11);
+            mat4.translate(matrix, matrix, [0, 0, -10]);
             gl.uniformMatrix4fv(programInfo.uniformLocations.matrix, false, matrix);
-            gl.uniformMatrix4fv(programInfo.uniformLocations.textureMatrix, false, glMatrix.mat4.create());
+            gl.uniformMatrix4fv(programInfo.uniformLocations.textureMatrix, false, mat4.create());
             gl.uniform1i(programInfo.uniformLocations.clicked, 1);
             gl.drawElements(gl.TRIANGLE_STRIP, 4, gl.UNSIGNED_SHORT, 0);
 
@@ -524,19 +521,19 @@ class UserInterface {
                 const index = _.findIndex(programInfo.textureMetaInformation.sprites, function (sprite) {
                     return sprite == currentSprite;
                 });
-                let matrix = glMatrix.mat4.create();
-                glMatrix.mat4.ortho(matrix, -position.x, 10 - position.x, position.y - 8, 1 + position.y, 0.1, 11);
-                glMatrix.mat4.translate(matrix, matrix, [0, 0, -10]);
-                glMatrix.mat4.translate(matrix, matrix, [0, 0, position.z]);
+                let matrix = mat4.create();
+                mat4.ortho(matrix, -position.x, 10 - position.x, position.y - 8, 1 + position.y, 0.1, 11);
+                mat4.translate(matrix, matrix, [0, 0, -10]);
+                mat4.translate(matrix, matrix, [0, 0, position.z]);
                 if (command.flipped) {
-                    glMatrix.mat4.rotate(matrix, matrix, Math.PI, [0, 0, 1]);
-                    glMatrix.mat4.translate(matrix, matrix, [-1, -1, 0]);
+                    mat4.rotate(matrix, matrix, Math.PI, [0, 0, 1]);
+                    mat4.translate(matrix, matrix, [-1, -1, 0]);
                 }
                 gl.uniformMatrix4fv(programInfo.uniformLocations.matrix, false, matrix);
 
-                let textureMatrix = glMatrix.mat4.create();
-                glMatrix.mat4.scale(textureMatrix, textureMatrix, [0.125, 0.125, 1])
-                glMatrix.mat4.translate(textureMatrix, textureMatrix, [index % 8, 7 - Math.floor(index / 8), 0]);
+                let textureMatrix = mat4.create();
+                mat4.scale(textureMatrix, textureMatrix, [0.125, 0.125, 1])
+                mat4.translate(textureMatrix, textureMatrix, [index % 8, 7 - Math.floor(index / 8), 0]);
                 gl.uniformMatrix4fv(programInfo.uniformLocations.textureMatrix, false, textureMatrix);
 
                 gl.drawElements(gl.TRIANGLE_STRIP, 4, gl.UNSIGNED_SHORT, 0);
@@ -955,7 +952,7 @@ class Game {
     async play() {
         this.gameState = new SelectState(this);
         while (true) {
-            console.log(this);
+            // console.log(this);
             this.gameState.start();
             let newState = await this.gameState.run();
             this.gameState.exit();

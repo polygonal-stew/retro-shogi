@@ -1,13 +1,16 @@
 # Retro Shogi
 
-I've archived this project, but it can still be used as an example of how to do 3D screen picking in webgl 2.0.
+## About
 
-A shogi game with retro graphics rendered with webgl 2.0.
+A Shogi game with retro graphics rendered with WebGL 2.0.
 
-## How to Run
-Git clone the repo and then run the following NPM commands to run the project:
+## Try it Out
+
+To run the project locally:
+
+```zsh
+npm install
+npm run dev
 ```
-npm run build
-npm run serve
-```
-See the results by going to http://localhost:8080.
+
+You may then visit the given address in your browser to see the project.
