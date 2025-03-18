@@ -368,14 +368,27 @@ class Hand {
 
 class UserInterface {
     constructor() {
-        var self = this;
+        let self = this;
         self.drawingBuffer = [];
         self.mousePosition = { x: -1, y: -1 };
         self.gridSelected = { x: -1, y: -1 };
         self.currentFrame = 0;
+
+        self.width = Math.min(document.body.clientHeight * (160.0 / 144.0), document.body.clientWidth);
+        self.height = Math.min(document.body.clientWidth * (144.0 / 160.0), document.body.clientHeight);
+
         self.loadAssets().then(function (assets) {
             self.initializeShader(assets)
         });
+    }
+
+    resize() {
+        this.width = Math.min(document.body.clientHeight * (160.0 / 144.0), document.body.clientWidth);
+        this.height = Math.min(document.body.clientWidth * (144.0 / 160.0), document.body.clientHeight);
+
+        this.context.viewport(0, 0, this.width, this.height);
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
     }
 
     async loadAssets() {
@@ -407,14 +420,19 @@ class UserInterface {
     }
 
     initializeShader(assets) {
-        var self = this;
-        this.canvas = document.getElementById('webgl-canvas');
+        let self = this;
+        self.canvas = document.getElementById('webgl-canvas');
+
+        self.canvas.width = self.width;
+        self.canvas.height = self.height;
 
         setInterval(function () {
             self.currentFrame++;
         }, 500);
 
         const gl = this.canvas.getContext('webgl2');
+
+        self.context = gl;
 
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
@@ -465,7 +483,7 @@ class UserInterface {
 
             gl.useProgram(programInfo.program);
             
-            gl.viewport(0, 0, 160, 144);
+            gl.viewport(0, 0, self.width, self.height);
 
             gl.clearColor(0.0, 0.0, 0.0, 0.0);
 
@@ -959,6 +977,14 @@ class Game {
             this.gameState = newState;
         }
     }
+
+    resize() {
+        this.userInterface.resize();
+    }
+}
+
+window.onresize = function () {
+    window.game.resize();
 }
 
 window.onload = function () {
