@@ -380,7 +380,7 @@ class UserInterface {
 
     async loadAssets() {
         const files = await Promise.all([
-            fetch('/user_interface_texture.json').then(function (response) {
+            fetch('user_interface_texture.json').then(function (response) {
                 return response.json();
             }),
             new Promise(function (resolve) {
@@ -388,14 +388,14 @@ class UserInterface {
                 image.onload = () => {
                     resolve(image);
                 };
-                image.src = '/user_interface_texture.png';
+                image.src = 'user_interface_texture.png';
             }),
             new Promise(function (resolve) {
                 let image = new Image;
                 image.onload = () => {
                     resolve(image);
                 };
-                image.src = '/selection_grid.png';
+                image.src = 'selection_grid.png';
             })
         ]);
 
