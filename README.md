@@ -6,7 +6,7 @@ A Shogi game with retro graphics rendered with WebGL 2.0.
 
 ## Try it Out
 
-You can try out the latest version on GitHub Pages here: [https://fluffyloaf254.github.io/retro-shogi/](https://fluffyloaf254.github.io/retro-shogi/)
+You can try out the latest version on GitHub Pages here: [https://polygonal-stew.github.io/retro-shogi/](https://polygonal-stew.github.io/retro-shogi/)
 
 To run the project locally:
 
